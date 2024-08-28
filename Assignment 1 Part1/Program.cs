@@ -7,25 +7,31 @@ namespace RecipeApp
     {
         static void Main(string[] args)
         {
-            Recipe recipe = new Recipe();  // Create a new Recipe object
-            double[] originalQuantities = null;  // To store original quantities for reset
+            List<Recipe> recipes = new List<Recipe>();  // Store multiple recipes
+            double[] originalQuantities = null;
 
             while (true)
             {
                 Console.WriteLine("\nRecipe Application");
                 Console.WriteLine("1. Enter a new recipe");
-                Console.WriteLine("2. Display recipe");
-                Console.WriteLine("3. Scale recipe");
-                Console.WriteLine("4. Reset quantities");
-                Console.WriteLine("5. Clear recipe");
-                Console.WriteLine("6. Exit");
+                Console.WriteLine("2. Display all recipes");
+                Console.WriteLine("3. Display a specific recipe");
+                Console.WriteLine("4. Scale a recipe");
+                Console.WriteLine("5. Reset quantities of a recipe");
+                Console.WriteLine("6. Clear a recipe");
+                Console.WriteLine("7. Exit");
                 Console.Write("Choose an option: ");
                 string choice = Console.ReadLine();
 
                 switch (choice)
                 {
                     case "1":
-                        recipe.ClearRecipe();
+                        // Enter a new recipe
+                        Console.Write("Enter the recipe name: ");
+                        string recipeName = Console.ReadLine();
+                        Recipe recipe = new Recipe(recipeName);
+                        recipes.Add(recipe);
+
                         Console.Write("Enter the number of ingredients: ");
                         int ingredientCount = int.Parse(Console.ReadLine());
                         originalQuantities = new double[ingredientCount];
@@ -38,7 +44,11 @@ namespace RecipeApp
                             double quantity = double.Parse(Console.ReadLine());
                             Console.Write("Enter unit of measurement: ");
                             string unit = Console.ReadLine();
-                            recipe.Ingredients.Add(new Ingredient(name, quantity, unit));
+                            Console.Write("Enter number of calories: ");
+                            int calories = int.Parse(Console.ReadLine());
+                            Console.Write("Enter food group: ");
+                            string foodGroup = Console.ReadLine();
+                            recipe.Ingredients.Add(new Ingredient(name, quantity, unit, calories, foodGroup));
                             originalQuantities[i] = quantity;
                         }
 
@@ -51,28 +61,89 @@ namespace RecipeApp
                             string step = Console.ReadLine();
                             recipe.Steps.Add(step);
                         }
+
+                        // Subscribe to calorie notifications
+                        recipe.CalorieNotification += (message) => Console.WriteLine(message);
+
                         break;
 
                     case "2":
-                        recipe.DisplayRecipe();
+                        // Display all recipes sorted alphabetically
+                        var sortedRecipes = recipes.OrderBy(r => r.Name).ToList();
+                        Console.WriteLine("\nRecipes:");
+                        foreach (var r in sortedRecipes)
+                        {
+                            Console.WriteLine(r.Name);
+                        }
                         break;
 
                     case "3":
-                        Console.WriteLine("Enter scale factor (0.5 for half, 2 for double, 3 for triple): ");
-                        double factor = double.Parse(Console.ReadLine());
-                        recipe.ScaleRecipe(factor);
+                        // Display a specific recipe
+                        Console.Write("Enter the name of the recipe to display: ");
+                        string displayRecipeName = Console.ReadLine();
+                        Recipe displayRecipe = recipes.FirstOrDefault(r => r.Name.Equals(displayRecipeName, StringComparison.OrdinalIgnoreCase));
+                        if (displayRecipe != null)
+                        {
+                            displayRecipe.DisplayRecipe();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Recipe not found.");
+                        }
                         break;
 
                     case "4":
-                        recipe.ResetQuantities(originalQuantities);
+                        // Scale a recipe
+                        Console.Write("Enter the name of the recipe to scale: ");
+                        string scaleRecipeName = Console.ReadLine();
+                        Recipe scaleRecipe = recipes.FirstOrDefault(r => r.Name.Equals(scaleRecipeName, StringComparison.OrdinalIgnoreCase));
+                        if (scaleRecipe != null)
+                        {
+                            Console.WriteLine("Enter scale factor (0.5 for half, 2 for double, 3 for triple): ");
+                            double factor = double.Parse(Console.ReadLine());
+                            scaleRecipe.ScaleRecipe(factor);
+                            Console.WriteLine("Recipe scaled.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Recipe not found.");
+                        }
                         break;
 
                     case "5":
-                        recipe.ClearRecipe();
-                        Console.WriteLine("Recipe cleared.");
+                        // Reset quantities of a recipe
+                        Console.Write("Enter the name of the recipe to reset quantities: ");
+                        string resetRecipeName = Console.ReadLine();
+                        Recipe resetRecipe = recipes.FirstOrDefault(r => r.Name.Equals(resetRecipeName, StringComparison.OrdinalIgnoreCase));
+                        if (resetRecipe != null)
+                        {
+                            resetRecipe.ResetQuantities(originalQuantities);
+                            Console.WriteLine("Quantities reset to original values.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Recipe not found.");
+                        }
                         break;
 
                     case "6":
+                        // Clear a recipe
+                        Console.Write("Enter the name of the recipe to clear: ");
+                        string clearRecipeName = Console.ReadLine();
+                        Recipe clearRecipe = recipes.FirstOrDefault(r => r.Name.Equals(clearRecipeName, StringComparison.OrdinalIgnoreCase));
+                        if (clearRecipe != null)
+                        {
+                            clearRecipe.ClearRecipe();
+                            Console.WriteLine("Recipe cleared.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Recipe not found.");
+                        }
+                        break;
+
+                    case "7":
+                        // Exit the application
                         return;
 
                     default:
