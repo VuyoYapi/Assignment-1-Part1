@@ -315,5 +315,6 @@ Calorie Calculation and Notification:
 
 The application calculates the total calories for each recipe and notifies the user if the total exceeds 300 calories.
 This updated application builds upon the initial implementation by adding these new features and enhancing usability, flexibility, and functionality.
+![Second part of the project](https://github.com/user-attachments/assets/3b01c6c4-a930-495e-97ec-3b5e0ae8a965)
 
 https://github.com/VuyoYapi/Assignment-1-Part1
